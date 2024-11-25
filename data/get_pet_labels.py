@@ -48,7 +48,7 @@ def get_pet_labels(image_dir):
     results_dict = dict()
     # Process each file in the directory
     for filename in filename_list:
-        # Skip hidden/system files
+        # Skip hidden and system files
         if filename.startswith("."):
             continue
 
