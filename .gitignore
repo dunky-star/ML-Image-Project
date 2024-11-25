@@ -1,0 +1,65 @@
+### MacOS ###
+**.DS_Store
+.DS_Store
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+=======
+/.idea/
+.env
+/.vscode/
+*.emb
+/chatbotapp/
+.env
+/data/faiss_index/
+
+
+### Anaconda ###
+*.zip
+perceptron.py
+/movie_dialog/
+*.pkl
+.ipynb_checkpoints
+.venv
+
+### Python Cache ###
+**/__pycache__
+.spyproject/
+
+
+# dependencies
+/node_modules
+
+# Env
+.env
