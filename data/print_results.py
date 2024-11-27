@@ -76,7 +76,7 @@ def print_results(results_dic, results_stats_dic, model,
     # Handle NoneType for model
     model_name = model.upper() if model else "UNKNOWN MODEL"
 
-    print("\n\n*** Results Summary for CNN Model Architecture:", model_name, "***")
+    print("\n\n*** Results Summary for Model Architecture:", model_name, "***")
     
     # Print general statistics
     print(f"N Images: {results_stats_dic['n_images']}  "
