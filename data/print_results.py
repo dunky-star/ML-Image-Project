@@ -32,11 +32,11 @@
 #       prints a summary of the results using results_dic and results_stats_dic
 # 
 # Tabulate Python library, which allows you to create neatly formatted tables in plain text.
-from tabulate import tabulate # Geoffrey Duncan Opiyo
-from colorama import Fore, Style, init
+#from tabulate import tabulate # Geoffrey Duncan Opiyo
+#from colorama import Fore, Style, init
 
 # Initialize colorama for Windows compatibility
-init(autoreset=True)
+#init(autoreset=True)
 
 def print_results(results_dic, results_stats_dic, model, 
                   print_incorrect_dogs = False, print_incorrect_breed = False):
@@ -73,36 +73,34 @@ def print_results(results_dic, results_stats_dic, model,
     Prints summary results on the classification and optionally misclassified
     dogs and breeds.
     """
-     # Header with bold styling and blue color
-    print(f"\n\n{Style.BRIGHT}{Fore.BLUE}*** Results Summary for Model Architecture: {model.upper()} ***{Style.RESET_ALL}\n")
+    # Handle NoneType for model
+    model_name = model.upper() if model else "UNKNOWN MODEL"
 
-    # General Results with green for success
-    print(f"{Fore.GREEN}# Total Images: {Style.RESET_ALL}{results_stats_dic['n_images']}")
-    print(f"{Fore.GREEN}# Dog Images: {Style.RESET_ALL}{results_stats_dic['n_dogs_img']}")
-    print(f"{Fore.GREEN}# Not-a-Dog Images: {Style.RESET_ALL}{results_stats_dic['n_notdogs_img']}\n")
+    print("\n\n*** Results Summary for CNN Model Architecture:", model_name, "***")
+    
+    # Print general statistics
+    print(f"N Images: {results_stats_dic['n_images']}  "
+          f"N Dog Images: {results_stats_dic['n_dogs_img']}  "
+          f"N NotDog Images: {results_stats_dic['n_notdogs_img']}")
 
-    # Detailed Statistics in a table with colored percentage metrics
-    stats_table = [
-        [f"% Not-a-Dog Correct", f"{Fore.CYAN}{results_stats_dic['pct_correct_notdogs']:.1f}%{Style.RESET_ALL}"],
-        [f"% Dogs Correct", f"{Fore.CYAN}{results_stats_dic['pct_correct_dogs']:.1f}%{Style.RESET_ALL}"],
-        [f"% Breeds Correct", f"{Fore.CYAN}{results_stats_dic['pct_correct_breed']:.1f}%{Style.RESET_ALL}"],
-        [f"% Match Labels", f"{Fore.CYAN}{results_stats_dic.get('pct_match', 'N/A'):.1f}%{Style.RESET_ALL}"],
-    ]
-    print(tabulate(stats_table, headers=[f"{Style.BRIGHT}Metric{Style.RESET_ALL}", f"{Style.BRIGHT}Value{Style.RESET_ALL}"], tablefmt='grid'))
+    # Print percentages
+    for key, value in results_stats_dic.items():
+        if key.startswith('pct'):
+            print(f"{key}: {value:.1f}")
 
-    # Optionally print misclassified dogs
+    # Print incorrect dog classifications if requested
     if print_incorrect_dogs and (
-        results_stats_dic['n_correct_dogs'] + results_stats_dic['n_correct_notdogs'] 
+        results_stats_dic['n_correct_dogs'] + results_stats_dic['n_correct_notdogs']
         != results_stats_dic['n_images']
     ):
-        print(f"\n{Style.BRIGHT}{Fore.RED}INCORRECT Dog/Not-a-Dog Assignments:{Style.RESET_ALL}")
-        for filename, result in results_dic.items():
-            if sum(result[3:]) == 1:
-                print(f"{Fore.RED}Pet Label: {Style.RESET_ALL}{result[0]} - {Fore.RED}Classifier Label: {Style.RESET_ALL}{result[1]}")
-    
-    # Optionally print misclassified breeds
-    if print_incorrect_breed and (results_stats_dic['n_correct_dogs'] != results_stats_dic['n_correct_breed']):
-        print(f"\n{Style.BRIGHT}{Fore.RED}INCORRECT Dog Breed Assignments:{Style.RESET_ALL}")
-        for filename, result in results_dic.items():
-            if sum(result[3:]) == 2 and result[2] == 0:
-                print(f"{Fore.RED}Pet Label: {Style.RESET_ALL}{result[0]} - {Fore.RED}Classifier Label: {Style.RESET_ALL}{result[1]}")
+        print("\nINCORRECT Dog/NOT Dog Assignments:")
+        for filename, values in results_dic.items():
+            if sum(values[3:]) == 1:
+                print(f"Real: {values[0]}   Classifier: {values[1]}")
+
+    # Print incorrect breed classifications if requested
+    if print_incorrect_breed and results_stats_dic['n_correct_dogs'] != results_stats_dic['n_correct_breed']:
+        print("\nINCORRECT Dog Breed Assignments:")
+        for filename, values in results_dic.items():
+            if sum(values[3:]) == 2 and values[2] == 0:
+                print(f"Real: {values[0]}   Classifier: {values[1]}")
