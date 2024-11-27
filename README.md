@@ -9,6 +9,7 @@
 - **Python**
 - **Pytorch**
 - **Torchvision**
+- **Transfer learning**
 - **VGG**
 - **AlexNet**
 - **RestNet**

@@ -32,11 +32,11 @@
 #       prints a summary of the results using results_dic and results_stats_dic
 # 
 # Tabulate Python library, which allows you to create neatly formatted tables in plain text.
-#from tabulate import tabulate # Geoffrey Duncan Opiyo
-#from colorama import Fore, Style, init
+from tabulate import tabulate # Geoffrey Duncan Opiyo
+from colorama import Fore, Style, init
 
 # Initialize colorama for Windows compatibility
-#init(autoreset=True)
+init(autoreset=True)
 
 def print_results(results_dic, results_stats_dic, model, 
                   print_incorrect_dogs = False, print_incorrect_breed = False):
@@ -74,33 +74,35 @@ def print_results(results_dic, results_stats_dic, model,
     dogs and breeds.
     """
     # Handle NoneType for model
+    # Ensure the model name is displayed in uppercase, or "UNKNOWN MODEL" if None
     model_name = model.upper() if model else "UNKNOWN MODEL"
 
-    print("\n\n*** Results Summary for Model Architecture:", model_name, "***")
-    
-    # Print general statistics
-    print(f"N Images: {results_stats_dic['n_images']}  "
-          f"N Dog Images: {results_stats_dic['n_dogs_img']}  "
-          f"N NotDog Images: {results_stats_dic['n_notdogs_img']}")
+    # Print the overall statistics using Colorama for colored text
+    print(f"{Fore.BLUE}{Style.BRIGHT}\n\n*** Results Summary for CNN Model Architecture: {model_name} ***{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}# Total Images: {Style.RESET_ALL}{results_stats_dic['n_images']}")
+    print(f"{Fore.CYAN}# Dog Images: {Style.RESET_ALL}{results_stats_dic['n_dogs_img']}")
+    print(f"{Fore.CYAN}# Not-a-Dog Images: {Style.RESET_ALL}{results_stats_dic['n_notdogs_img']}")
 
-    # Print percentages
-    for key, value in results_stats_dic.items():
-        if key.startswith('pct'):
-            print(f"{key}: {value:.1f}")
+    # Print percentages with highlights for clarity
+    print(f"\n{Fore.GREEN}{Style.BRIGHT}% Correct Dogs: {results_stats_dic['pct_correct_dogs']:.1f}%{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}% Correct Not-a-Dog: {results_stats_dic['pct_correct_notdogs']:.1f}%{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}% Correct Breed: {results_stats_dic['pct_correct_breed']:.1f}%{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}% Match Labels: {results_stats_dic.get('pct_match', 'N/A'):.1f}%{Style.RESET_ALL}\n")
 
-    # Print incorrect dog classifications if requested
-    if print_incorrect_dogs and (
-        results_stats_dic['n_correct_dogs'] + results_stats_dic['n_correct_notdogs']
-        != results_stats_dic['n_images']
-    ):
-        print("\nINCORRECT Dog/NOT Dog Assignments:")
-        for filename, values in results_dic.items():
-            if sum(values[3:]) == 1:
-                print(f"Real: {values[0]}   Classifier: {values[1]}")
+    # Additional sections for misclassifications
+    if print_incorrect_dogs:
+        if (results_stats_dic['n_correct_dogs'] + results_stats_dic['n_correct_notdogs']
+                != results_stats_dic['n_images']):
+            print(f"{Fore.RED}Incorrect Dog/Not-a-Dog Assignments:{Style.RESET_ALL}")
+            for key, value in results_dic.items():
+                if sum(value[3:]) == 1:
+                    print(f"Real: {value[0]}   Classifier: {value[1]}")
 
-    # Print incorrect breed classifications if requested
-    if print_incorrect_breed and results_stats_dic['n_correct_dogs'] != results_stats_dic['n_correct_breed']:
-        print("\nINCORRECT Dog Breed Assignments:")
-        for filename, values in results_dic.items():
-            if sum(values[3:]) == 2 and values[2] == 0:
-                print(f"Real: {values[0]}   Classifier: {values[1]}")
+    if print_incorrect_breed:
+        if results_stats_dic['n_correct_dogs'] != results_stats_dic['n_correct_breed']:
+            print(f"{Fore.RED}\nIncorrect Dog Breed Assignments:{Style.RESET_ALL}")
+            for key, value in results_dic.items():
+                if sum(value[3:]) == 2 and value[2] == 0:
+                    print(f"Real: {value[0]}   Classifier: {value[1]}")
+
+    print(f"{Fore.YELLOW}*** End of Results Summary for {model_name} ***{Style.RESET_ALL}")
