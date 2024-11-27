@@ -31,6 +31,9 @@
 #       Notice that this function doesn't to return anything because it  
 #       prints a summary of the results using results_dic and results_stats_dic
 # 
+# Tabulate Python library, which allows you to create neatly formatted tables in plain text.
+from tabulate import tabulate # Geoffrey Duncan Opiyo
+
 def print_results(results_dic, results_stats_dic, model, 
                   print_incorrect_dogs = False, print_incorrect_breed = False):
     """
@@ -62,40 +65,42 @@ def print_results(results_dic, results_stats_dic, model,
     Returns:
            None - simply printing results.
     """    
-     # Print model architecture
-    print("\n\n*** Results Summary for CNN Model Architecture:", model.upper(), "***")
+    """
+    Prints summary results on the classification and optionally misclassified
+    dogs and breeds.
+    """
+    # Header
+    print("\n\n*** Results Summary for CNN Model Architecture:", model.upper(), "***\n")
     
-    # Print number of images, dog images, and "not-a-dog" images
-    print(f"Number of Images: {results_stats_dic['n_images']}")
-    print(f"Number of Dog Images: {results_stats_dic['n_dogs_img']}")
-    print(f"Number of 'Not-a' Dog Images: {results_stats_dic['n_notdogs_img']}\n")
+    # General Results
+    print("# Total Images:", results_stats_dic['n_images'])
+    print("# Dog Images:", results_stats_dic['n_dogs_img'])
+    print("# Not-a-Dog Images:", results_stats_dic['n_notdogs_img'], "\n")
     
-    # Print all percentage statistics
-    print("*** Percentage Statistics ***")
-    for key in results_stats_dic:
-        if key.startswith('pct_'):
-            print(f"{key}: {results_stats_dic[key]:.2f}%")
-    
-    # Print misclassified dogs if requested
-    if print_incorrect_dogs:
-        if (results_stats_dic['n_correct_dogs'] + results_stats_dic['n_correct_notdogs'] 
-            != results_stats_dic['n_images']):
-            print("\n*** Misclassified Dogs ***")
-            for key, value in results_dic.items():
-                # If sum of index 3 and 4 is 1, it indicates a misclassification
-                if sum(value[3:]) == 1:
-                    print(f"Pet Label: {value[0]}  - Classifier Label: {value[1]}")
-        else:
-            print("\nNo misclassified dogs to display.")
+    # Detailed Statistics in a table
+    stats_table = [
+        ['% Not-a-Dog Correct', f"{results_stats_dic['pct_correct_notdogs']:.1f}%"],
+        ['% Dogs Correct', f"{results_stats_dic['pct_correct_dogs']:.1f}%"],
+        ['% Breeds Correct', f"{results_stats_dic['pct_correct_breed']:.1f}%"],
+        ['% Match Labels', f"{results_stats_dic.get('pct_match', 'N/A'):.1f}%"],
+    ]
+    print(tabulate(stats_table, headers=['Metric', 'Value'], tablefmt='grid'))
 
-    # Print misclassified breeds if requested
-    if print_incorrect_breed:
-        if results_stats_dic['n_correct_dogs'] != results_stats_dic['n_correct_breed']:
-            print("\n*** Misclassified Breeds ***")
-            for key, value in results_dic.items():
-                # Both pet label and classifier label indicate a dog, but breed mismatch
-                if sum(value[3:]) == 2 and value[2] == 0:
-                    print(f"Pet Label: {value[0]}  - Classifier Label: {value[1]}")
-        else:
-            print("\nNo misclassified breeds to display.")
+    # Optionally print misclassified dogs
+    if print_incorrect_dogs and (
+        results_stats_dic['n_correct_dogs'] + results_stats_dic['n_correct_notdogs'] 
+        != results_stats_dic['n_images']
+    ):
+        print("\nINCORRECT Dog/Not-a-Dog Assignments:")
+        for filename, result in results_dic.items():
+            if sum(result[3:]) == 1:
+                print(f"Pet Label: {result[0]} - Classifier Label: {result[1]}")
+    
+    # Optionally print misclassified breeds
+    if print_incorrect_breed and (results_stats_dic['n_correct_dogs'] != results_stats_dic['n_correct_breed']):
+        print("\nINCORRECT Dog Breed Assignments:")
+        for filename, result in results_dic.items():
+            if sum(result[3:]) == 2 and result[2] == 0:
+                print(f"Pet Label: {result[0]} - Classifier Label: {result[1]}")
+
                 
