@@ -22,6 +22,8 @@
 ##
 # Imports classifier function for using CNN to classify images 
 from classifier import classifier 
+# Created by Geoffrey Duncan Opiyo to handle Windows system file path
+from os.path import join
 
 # TODO 3: Define classify_images function below, specifically replace the None
 #       below by the function definition of the classify_images function. 
@@ -30,6 +32,7 @@ from classifier import classifier
 #       data type so no return is needed.
 # 
 def classify_images(images_dir, results_dic, model):
+
     """
     Creates classifier labels with classifier function, compares pet labels to 
     the classifier labels, and adds the classifier label and the comparison of 
@@ -66,21 +69,20 @@ def classify_images(images_dir, results_dic, model):
            None - results_dic is mutable data type so no return needed.         
     """
     # Loop through each filename (key) in the results dictionary
-    for filename in results_dic:
-        # Create the full path to the image
-        image_path = images_dir + filename
+    for filename, value in results_dic.items():
+         # Construct full image path using os.path.join
+         # Cross-platform compatibility - Geoffrey Duncan Opiyo
+        image_path = join(images_dir, filename) # Window's file system handling (Geoffrey Duncan Opiyo)
         
-        # Use the classifier function to get the classifier label
+        
+         # Get the classifier label
         classifier_label = classifier(image_path, model)
-        
-        # Format the classifier label to be lowercase and stripped of extra whitespace
+
+        # Normalize the classifier label (lowercase and strip spaces)
         classifier_label = classifier_label.lower().strip()
-        
-        # Get the pet label from the results dictionary
-        pet_label = results_dic[filename][0]
-        
-        # Check if the pet label is found in the classifier label
-        match = 1 if pet_label in classifier_label else 0
-        
-        # Add the classifier label and match to the results dictionary
-        results_dic[filename].extend([classifier_label, match]) 
+
+        # Determine if the pet label matches the classifier label
+        is_match = 1 if value[0] in classifier_label else 0
+
+        # Extend the results_dic with classifier label and match indicator
+        results_dic[filename].extend([classifier_label, is_match])
