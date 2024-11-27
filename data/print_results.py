@@ -74,42 +74,47 @@ def print_results(results_dic, results_stats_dic, model,
     dogs and breeds.
     """
     # Handle NoneType for model
-    # Ensure the model name is displayed in uppercase, or "UNKNOWN MODEL" if None
-    model_name = model.upper() if model else "UNKNOWN MODEL"
-    
+     # Ensure the model name is displayed in uppercase, or "UNKNOWN MODEL" if None
+    model_name = model.upper() if model else f"{Fore.RED}UNKNOWN MODEL{Style.RESET_ALL}"
+
     # General statistics
     general_stats = [
-        ["# Total Images", results_stats_dic['n_images']],
-        ["# Dog Images", results_stats_dic['n_dogs_img']],
-        ["# Not-a-Dog Images", results_stats_dic['n_notdogs_img']]
+        [Fore.YELLOW + "# Total Images" + Style.RESET_ALL, results_stats_dic['n_images']],
+        [Fore.YELLOW + "# Dog Images" + Style.RESET_ALL, results_stats_dic['n_dogs_img']],
+        [Fore.YELLOW + "# Not-a-Dog Images" + Style.RESET_ALL, results_stats_dic['n_notdogs_img']]
     ]
     print("\n" + tabulate(general_stats, tablefmt="grid"))
 
+    # Header for CNN Model-Specific Results
+    print(f"\n\n{Fore.CYAN}*** Results Summary for CNN Model Architecture: {model_name} ***{Style.RESET_ALL}\n")
+
     # Statistics for all models
     table_headers = [
-        "CNN Model Architecture",
-        "% Not-a-Dog Correct",
-        "% Dogs Correct",
-        "% Breeds Correct",
-        "% Match Labels"
+        f"{Fore.GREEN}CNN Model Architecture{Style.RESET_ALL}",
+        f"{Fore.GREEN}% Not-a-Dog Correct{Style.RESET_ALL}",
+        f"{Fore.GREEN}% Dogs Correct{Style.RESET_ALL}",
+        f"{Fore.GREEN}% Breeds Correct{Style.RESET_ALL}",
+        f"{Fore.GREEN}% Match Labels{Style.RESET_ALL}"
     ]
+
+    # Example Data (Update with real values dynamically if needed)
     table_data = [
         [
-            "ResNet",
+            Fore.MAGENTA + "ResNet" + Style.RESET_ALL,
             "90.0%",
             f"{Fore.BLUE}100.0%{Style.RESET_ALL}",
             "90.0%",
             "82.5%"
         ],
         [
-            "AlexNet",
+            Fore.MAGENTA + "AlexNet" + Style.RESET_ALL,
             f"{Fore.BLUE}100.0%{Style.RESET_ALL}",
             f"{Fore.BLUE}100.0%{Style.RESET_ALL}",
             "80.0%",
             "75.0%"
         ],
         [
-            "VGG",
+            Fore.MAGENTA + "VGG" + Style.RESET_ALL,
             f"{Fore.BLUE}100.0%{Style.RESET_ALL}",
             f"{Fore.BLUE}100.0%{Style.RESET_ALL}",
             "93.3%",
@@ -117,20 +122,22 @@ def print_results(results_dic, results_stats_dic, model,
         ]
     ]
 
-    print("\n" + tabulate(table_data, headers=table_headers, tablefmt="grid"))
+    print(tabulate(table_data, headers=table_headers, tablefmt="grid"))
 
     # Optional Misclassifications
     if print_incorrect_dogs:
         if (results_stats_dic['n_correct_dogs'] + results_stats_dic['n_correct_notdogs']
                 != results_stats_dic['n_images']):
-            print(f"{Fore.RED}\nIncorrectly Classified Dogs:{Style.RESET_ALL}")
+            print(f"\n{Fore.RED}*** Incorrectly Classified Dogs ***{Style.RESET_ALL}")
             for key, value in results_dic.items():
-                if sum(value[3:]) == 1:
-                    print(f"Real: {value[0]}   Classifier: {value[1]}")
+                if sum(value[3:]) == 1:  # Misclassified dog
+                    print(f"{Fore.YELLOW}Real:{Style.RESET_ALL} {value[0]}   "
+                          f"{Fore.YELLOW}Classifier:{Style.RESET_ALL} {value[1]}")
 
     if print_incorrect_breed:
         if results_stats_dic['n_correct_dogs'] != results_stats_dic['n_correct_breed']:
-            print(f"{Fore.RED}\nIncorrectly Classified Breeds:{Style.RESET_ALL}")
+            print(f"\n{Fore.RED}*** Incorrectly Classified Breeds ***{Style.RESET_ALL}")
             for key, value in results_dic.items():
-                if sum(value[3:]) == 2 and value[2] == 0:
-                    print(f"Real: {value[0]}   Classifier: {value[1]}")
+                if sum(value[3:]) == 2 and value[2] == 0:  # Misclassified breed
+                    print(f"{Fore.YELLOW}Real:{Style.RESET_ALL} {value[0]}   "
+                          f"{Fore.YELLOW}Classifier:{Style.RESET_ALL} {value[1]}")
