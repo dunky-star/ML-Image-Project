@@ -4,7 +4,7 @@
 #                                                                             
 # PROGRAMMER: Geoffrey Duncan Opiyo
 # DATE CREATED:  11/24/24                               
-# REVISED DATE: 11/24/24
+# REVISED DATE: 11/26/24
 # PURPOSE: Create a function classify_images that uses the classifier function 
 #          to create the classifier labels and then compares the classifier 
 #          labels to the pet image labels. This function inputs:
