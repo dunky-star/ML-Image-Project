@@ -23,6 +23,7 @@
 # Imports classifier function for using CNN to classify images 
 from classifier import classifier 
 # Created by Geoffrey Duncan Opiyo to handle Windows system file path
+# Using os.path.join handles concatenating the paths correctly, including adding the proper separator.
 from os.path import join
 
 # TODO 3: Define classify_images function below, specifically replace the None
@@ -68,14 +69,20 @@ def classify_images(images_dir, results_dic, model):
      Returns:
            None - results_dic is mutable data type so no return needed.         
     """
+   # Construct full image path using os.path.join
+   # Cross-platform compatibility - Geoffrey Duncan Opiyo
+   # Ensure `images_dir` ends with a proper separator
+   # Window's file system handling (Geoffrey Duncan Opiyo) and Unix/Linux/Mac
+   
+    if not images_dir.endswith('/') and not images_dir.endswith('\\'):
+        images_dir += '/'
+
     # Loop through each filename (key) in the results dictionary
     for filename, value in results_dic.items():
-         # Construct full image path using os.path.join
-         # Cross-platform compatibility - Geoffrey Duncan Opiyo
-        image_path = join(images_dir, filename) # Window's file system handling (Geoffrey Duncan Opiyo)
-        
-        
-         # Get the classifier label
+        # Construct full image path using os.path.join
+        image_path = join(images_dir, filename)
+
+        # Get the classifier label
         classifier_label = classifier(image_path, model)
 
         # Normalize the classifier label (lowercase and strip spaces)
